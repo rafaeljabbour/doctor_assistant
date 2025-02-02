@@ -1,0 +1,27 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Production build (if using a build step)
+dist/
+build/
+
+# OS-specific or editor-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Python virtual environment folder
+.venv/
+venv/
+
+# Python cache files (just in case they're outside venv)
+__pycache__/
+*.py[cod]
+
+
+# Optional: environment variables (recommended)
+.env
