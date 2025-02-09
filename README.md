@@ -1,4 +1,3 @@
-```markdown
 # Senioritis
 
 **An AI-Powered, Autonomous Robot to Streamline Pre-Screening in Medical Waiting Rooms**
@@ -97,7 +96,6 @@ Senioritis uses MongoDB Atlas with the following collections:
 ```bash
 git clone https://github.com/yourusername/Senioritis.git
 cd Senioritis
-```
 
 ### Install Dependencies
 
