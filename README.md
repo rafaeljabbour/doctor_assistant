@@ -174,11 +174,10 @@ python app.py
 
 ## Team & Acknowledgments
 **Contributors:**
-- Rafael Jabbour
+- Rafael Jabbour (Me)
 - Alina Khan
 - Robert Solomon Saab
 - Constantine Dean Priftakis
-- You (the Author)
 
 A huge thank you to the University of Toronto Robotics Association for organizing UTRA Hacks 2025. We appreciate the opportunity to develop such an innovative project and look forward to continuing our work on Senioritis and other robotics solutions!
 ```
