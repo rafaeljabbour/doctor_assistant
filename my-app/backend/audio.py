@@ -1,17 +1,19 @@
-# audio.py
-
 from openai import OpenAI
 import os
 
-# Load your OpenAI API key from the environment
-OPENAI_API_KEY = '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'
+# Load API Key
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
-UPLOAD_FOLDER = "uploads"  # Folder to store audio files
-BASE_URL = "http://localhost:5000/uploads/"  # Base URL for TTS audio
+UPLOAD_FOLDER = "uploads"  # Store all audio files in this directory
+BASE_URL = "http://localhost:5000/uploads/"  # Access uploaded files via this URL
 
-# Original system prompts
 ORIGINAL_SYMPTOM_MESSAGES = [
-    {"role": "system", "content": "You are extracting symptoms from a hospital visit transcription. Return a comma-separated list of symptoms including all previously mentioned symptoms."}
+    {"role": "system", "content": (
+        "You are extracting symptoms from a hospital visit transcription."
+        "Be as descriptive as possible on each symptom, categorizing them in one or two words."
+        "Return a comma-separated list of symptoms including any and all previously meantioned symptoms."
+        "If you have no symptoms to report, from this or any previous communication, respond with an empty string"
+    )}
 ]
 ORIGINAL_RESPONSE_MESSAGES = [
     {"role": "system", "content": (
@@ -21,23 +23,35 @@ ORIGINAL_RESPONSE_MESSAGES = [
         "probe for details (e.g., duration, severity, triggers). Keep responses brief and focused."
     )}
 ]
-
 symptom_messages = ORIGINAL_SYMPTOM_MESSAGES.copy()
 response_messages = ORIGINAL_RESPONSE_MESSAGES.copy()
 
-def reset_history():
+def resetHistory():
     global symptom_messages, response_messages
     symptom_messages = ORIGINAL_SYMPTOM_MESSAGES.copy()
     response_messages = ORIGINAL_RESPONSE_MESSAGES.copy()
 
-def transcribe(filepath) -> str:
+def firstQuestion(output_filename: str) -> str:
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    speech_file_path = os.path.join(UPLOAD_FOLDER, output_filename)
+    with client.audio.speech.with_streaming_response.create(
+        model="tts-1",
+        voice="coral",
+        speed=1,
+        input="Hello! I am a hospital pre-screening bot. Please describe your symptoms in detail and I will pass on the information to your doctor."
+    ) as response:
+        response.stream_to_file(speech_file_path)
+    return BASE_URL + output_filename  # Return URL instead of relative path
+
+
+def transcribe(filepath) -> str: 
     client = OpenAI(api_key=OPENAI_API_KEY)
     with open(filepath, "rb") as audio_file:
         transcription = client.audio.transcriptions.create(
-            model="whisper-1",
+            model="whisper-1", 
             file=audio_file,
             response_format="json"
-        )
+        ) 
     return transcription.text
 
 def getSymptoms(transcription: str) -> str:
@@ -47,7 +61,6 @@ def getSymptoms(transcription: str) -> str:
         model="gpt-4o-mini",
         messages=symptom_messages
     )
-    # Append the assistant's response to maintain context
     symptom_messages.append({"role": "assistant", "content": completion.choices[0].message.content})
     return completion.choices[0].message.content
 
@@ -59,9 +72,9 @@ def respond(transcription: str, output_filename: str) -> str:
         messages=response_messages
     )
     response_messages.append({"role": "assistant", "content": completion.choices[0].message.content})
-    
-    # Save the AI response as an audio file using TTS
+    # Save the AI response as an audio file
     speech_file_path = os.path.join(UPLOAD_FOLDER, output_filename)
+    
     with client.audio.speech.with_streaming_response.create(
         model="tts-1",
         voice="coral",
@@ -69,5 +82,5 @@ def respond(transcription: str, output_filename: str) -> str:
         input=completion.choices[0].message.content
     ) as response:
         response.stream_to_file(speech_file_path)
-    
-    return BASE_URL + output_filename
+
+    return BASE_URL + output_filename  # Return URL instead of relative path
