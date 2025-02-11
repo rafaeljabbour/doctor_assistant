@@ -1,5 +1,7 @@
 # Senioritis
 
+**This project won best use of mongodb**
+
 **An AI-Powered, Autonomous Robot to Streamline Pre-Screening in Medical Waiting Rooms**
 
 Senioritis is a proof-of-concept robot designed to reduce operational inefficiencies in walk-in clinic waiting rooms. With AI-driven conversations, autonomous navigation, and real-time database updates, Senioritis aims to minimize patient wait times, reduce staff workload, and improve overall patient satisfaction.
